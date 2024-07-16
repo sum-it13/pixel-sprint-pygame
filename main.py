@@ -52,6 +52,7 @@ text = pygame.font.Font('font/Pixeltype.ttf',50)
 game_active = False
 start_time = 0 #used to restart game
 score = 0 #to display score
+sound = pygame.mixer.Sound('audio/jump.mp3')
 
 
 sky_surface = pygame.image.load('graphics/Sky.png').convert()
@@ -63,15 +64,15 @@ snail_frame_2 = pygame.image.load('graphics/snail/snail2.png').convert_alpha()
 snail_frames = [snail_frame_1,snail_frame_2]
 snail_frame_index = 0
 snail_surf = snail_frames[snail_frame_index]
-fly_frame_1 = pygame.image.load('graphics/Fly/Fly1.png')
-fly_frame_2 = pygame.image.load('graphics/Fly/Fly2.png')
+fly_frame_1 = pygame.transform.scale(pygame.image.load('graphics/Fly/Fly1.png'),(60,30))
+fly_frame_2 = pygame.transform.scale(pygame.image.load('graphics/Fly/Fly2.png'),(60,30))
 fly_frames = [fly_frame_1,fly_frame_2]
 fly_frame_index = 0
 fly_surf = fly_frames[fly_frame_index]
 
 
 obstacle_rect_list = []
-
+ceiling = 30
 
 
 player_walk_1 = pygame.image.load('graphics/Player/player_walk_1.png').convert_alpha()
@@ -110,8 +111,10 @@ while True:
             exit()#opposite of .init()
         if game_active:    
             if event.type == pygame.KEYDOWN:
-                if event.key==pygame.K_SPACE and player_rect.bottom>=300:
+                if (event.key==pygame.K_SPACE or event.key==pygame.K_UP) and player_rect.bottom==300:
+                    sound.play()
                     player_gravity = -20
+
         else:
             if event.type == pygame.KEYDOWN and event.key==pygame.K_SPACE:
                 game_active = True
@@ -121,7 +124,6 @@ while True:
                 if randint(0,2):
                     obstacle_rect_list.append(snail_surf.get_rect(midbottom=(randint(900,1100),300)))
                 else:
-                    
                     obstacle_rect_list.append(fly_surf.get_rect(midbottom=(randint(900,1100),250)))
             if event.type == snail_anime_timer:
                 if snail_frame_index == 0: snail_frame_index=1
@@ -133,11 +135,12 @@ while True:
                 else:
                     fly_frame_index = 0
                 fly_surf = fly_frames[fly_frame_index ]
+            
+                
 
     if game_active:
         screen.blit(sky_surface,(0,0))#blit=block image transfer
         screen.blit(ground_image,(0,300))
-        #screen.blit(score_surface,score_rect)
         score = display_score()
 
         # snail_rect.x -=6 #speed of snail
@@ -148,7 +151,7 @@ while True:
         #Player
         player_gravity+=1 #speed increases like gravity
         player_rect.y+=player_gravity
-        if player_rect.bottom>=300:
+        if player_rect.bottom>=300:# to keep on ground
             player_rect.bottom = 300
         player_anime()
         screen.blit(player_surf,player_rect)
