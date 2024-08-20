@@ -1,5 +1,6 @@
 # sprint-jump-pygame
 
+
 A simple two dimensional game based on the famous google dinosaur game. Player runs against obstacles to score points, the game ends if the player collides with any obstacle.
 
 
